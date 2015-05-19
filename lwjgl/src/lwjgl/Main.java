@@ -19,7 +19,6 @@ import textures.TerrainTexturePack;
 import graphics.Loader;
 import graphics.MasterRenderer;
 import graphics.OBJFileLoader;
-import graphics.OBJLoader;
 import graphics.EntityRenderer;
 import graphics.Window;
 
