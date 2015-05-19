@@ -15,11 +15,9 @@ import models.ModelData;
 
 public class OBJFileLoader {
 	
-	private static final String RES_LOC = "res/";
-
-	public static ModelData loadOBJ(String objFileName) {
+	public static ModelData loadOBJ(String filePath) {
 		FileReader isr = null;
-		File objFile = new File(RES_LOC + objFileName + ".obj");
+		File objFile = new File(filePath);
 		try {
 			isr = new FileReader(objFile);
 		} catch (FileNotFoundException e) {

@@ -39,8 +39,7 @@ public class Main implements Runnable {
 
 		Loader loader = new Loader();
 
-		// create terrain textures and blendmap, used for multitexturing
-		// terrains
+		// create terrain textures and blendmap, used for multitexturing terrains
 
 		TerrainTexture backgroundTexture = new TerrainTexture(
 				loader.loadTexture("res/grass-terrain-texture.png"));
@@ -77,7 +76,7 @@ public class Main implements Runnable {
 
 		// create stall entity
 
-		ModelData data = OBJFileLoader.loadOBJ("stall-model");
+		ModelData data = OBJFileLoader.loadOBJ("res/stall-model.obj");
 		TexturedModel shopTexturedModel = new TexturedModel(loader.loadToVao(
 				data.getVertices(), data.getTextureCoords(), data.getNormals(),
 				data.getIndices()), new ModelTexture(
@@ -92,7 +91,7 @@ public class Main implements Runnable {
 		
 		// create grass on terrain
 
-		data = OBJFileLoader.loadOBJ("grass-model");
+		data = OBJFileLoader.loadOBJ("res/grass-model.obj");
 		TexturedModel grassTexturedModel = new TexturedModel(loader.loadToVao(
 				data.getVertices(), data.getTextureCoords(), data.getNormals(),
 				data.getIndices()), new ModelTexture(
@@ -111,7 +110,6 @@ public class Main implements Runnable {
 					0, 0, 1));
 		}
 		entities.add(shop);
-//		entities.add(palmTree);
 
 		// main loop
 
