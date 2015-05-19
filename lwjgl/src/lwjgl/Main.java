@@ -90,20 +90,6 @@ public class Main implements Runnable {
 				0, 0, 0, 1);
 		shop.increaseRotation(0, 180, 0);
 		
-		//create palmtree
-		/*
-		data = OBJFileLoader.loadOBJ("palmtree-model");
-		TexturedModel palmTreeTexturedModel = new TexturedModel(loader.loadToVao(
-				data.getVertices(), data.getTextureCoords(), data.getNormals(),
-				data.getIndices()), new ModelTexture(
-				loader.loadTexture("res/palmtree-model-texture.png")));
-		palmTreeTexturedModel.getTexture().setShineDamper(10);
-		palmTreeTexturedModel.getTexture().setReflectivity(1);
-		palmTreeTexturedModel.getTexture().setAmbient(0.5f);
-
-		Entity palmTree = new Entity(palmTreeTexturedModel, new Vector3f(0, 0, -50f),
-				0, 0, 0, 1);
-		*/
 		// create grass on terrain
 
 		data = OBJFileLoader.loadOBJ("grass-model");
