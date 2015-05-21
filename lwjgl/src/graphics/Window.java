@@ -74,22 +74,22 @@ public class Window {
 	public void update(Camera camera) {
 		GLFW.glfwPollEvents();
 		if (left.isPressed()) {
-			camera.getPosition().x -= 0.1f;
+			camera.getPosition().x -= 0.5f;
 		}
 		if (right.isPressed()) {
-			camera.getPosition().x += 0.1f;
+			camera.getPosition().x += 0.5f;
 		}
 		if (up.isPressed()) {
-			camera.getPosition().y += 0.1f;
+			camera.getPosition().y += 0.5f;
 		}
 		if (down.isPressed()) {
-			camera.getPosition().y -= 0.1f;
+			camera.getPosition().y -= 0.5f;
 		}
 		if (forward.isPressed()) {
-			camera.getPosition().z -= 0.1f;
+			camera.getPosition().z -= 0.5f;
 		}
 		if (backward.isPressed()) {
-			camera.getPosition().z += 0.1f;
+			camera.getPosition().z += 0.5f;
 		}
 	}
 

@@ -17,5 +17,14 @@ public class Vector3f {
 	public float length(){
 		return (float) Math.sqrt(x*x + y*y + z*z);
 	}
+	
+	public void normalize(){
+		float length = length();
+		if(length!=1 && length > 0){
+			x /= length;
+			y /= length;
+			z /= length;
+		}
+	}
 
 }

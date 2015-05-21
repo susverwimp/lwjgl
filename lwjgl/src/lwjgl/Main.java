@@ -58,19 +58,26 @@ public class Main implements Runnable {
 
 		// create terrain
 
-		Terrain terrain1 = new Terrain(0, -1, loader, texturePack, blendMap);
-		Terrain terrain2 = new Terrain(1, -1, loader, texturePack, blendMap);
-		Terrain terrain3 = new Terrain(-1, -1, loader, texturePack, blendMap);
+		Terrain terrain1 = new Terrain(0, -1, loader, texturePack, blendMap, "heightmap");
+		Terrain terrain2 = new Terrain(1, -1, loader, texturePack, blendMap, "heightmap");
+		Terrain terrain3 = new Terrain(-1, -1, loader, texturePack, blendMap, "heightmap");
 
 		// create light
 
-		Light light = new Light(new Vector3f(0, 10, -20f),
-				new Vector3f(1, 1, 1));
+		Light light1 = new Light(new Vector3f(0, 100, -100), new Vector3f(1,1,1));
+		Light light2 = new Light(new Vector3f(185, 10, -293f), new Vector3f(2, 0, 0), new Vector3f(1,  0.01f, 0.002f));
+		Light light3 = new Light(new Vector3f(370, 17, -300f), new Vector3f(0, 2, 2), new Vector3f(1, 0.01f, 0.002f));
+		Light light4 = new Light(new Vector3f(293, 7, -305f), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f));
+		
+		List<Light> lights = new ArrayList<>();
+		lights.add(light1);
+		lights.add(light2);
+		lights.add(light3);
+		lights.add(light4);
 
 		// create camera
 
 		Camera camera = new Camera();
-		camera.getPosition().y += 1;
 
 		MasterRenderer renderer = new MasterRenderer();
 
@@ -123,7 +130,7 @@ public class Main implements Runnable {
 			renderer.processTerrain(terrain2);
 			renderer.processTerrain(terrain3);
 
-			renderer.render(light, camera);
+			renderer.render(lights, camera);
 
 			window.update(camera);
 			window.swapBuffers();
