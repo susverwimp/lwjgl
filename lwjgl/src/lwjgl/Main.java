@@ -56,18 +56,21 @@ public class Main implements Runnable {
 		TerrainTexture blendMap = new TerrainTexture(
 				loader.loadTexture("res/blendmap.png"));
 
-		// create terrain
+		// create terrains
 
-		Terrain terrain1 = new Terrain(0, -1, loader, texturePack, blendMap, "heightmap");
-		Terrain terrain2 = new Terrain(1, -1, loader, texturePack, blendMap, "heightmap");
-		Terrain terrain3 = new Terrain(-1, -1, loader, texturePack, blendMap, "heightmap");
+		Terrain[][] terrains = new Terrain[3][3];
+		for(int i = 0; i<terrains.length; i++){
+			for(int j = 0; j<terrains[i].length; j++){
+				terrains[i][j] = new Terrain(i, j, loader, texturePack, blendMap, "heightmap");
+			}
+		}
 
 		// create light
 
-		Light light1 = new Light(new Vector3f(0, 100, -100), new Vector3f(1,1,1));
-		Light light2 = new Light(new Vector3f(185, 10, -293f), new Vector3f(2, 0, 0), new Vector3f(1,  0.01f, 0.002f));
-		Light light3 = new Light(new Vector3f(370, 17, -300f), new Vector3f(0, 2, 2), new Vector3f(1, 0.01f, 0.002f));
-		Light light4 = new Light(new Vector3f(293, 7, -305f), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f));
+		Light light1 = new Light(new Vector3f(1200, 1000, 1200), new Vector3f(1,1,1));
+		Light light2 = new Light(new Vector3f(1200, 10, 2300), new Vector3f(2, 0, 0), new Vector3f(1,  0.01f, 0.002f));
+		Light light3 = new Light(new Vector3f(1200, 17, 2200), new Vector3f(0, 2, 2), new Vector3f(1, 0.01f, 0.002f));
+		Light light4 = new Light(new Vector3f(1200, 20, 2100), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f));
 		
 		List<Light> lights = new ArrayList<>();
 		lights.add(light1);
@@ -77,9 +80,11 @@ public class Main implements Runnable {
 
 		// create camera
 
-		Camera camera = new Camera();
+		Camera camera = new Camera(new Vector3f(1200, 1, 2400));
 
 		MasterRenderer renderer = new MasterRenderer();
+
+		List<Entity> entities = new ArrayList<>();
 
 		// create stall entity
 
@@ -92,30 +97,13 @@ public class Main implements Runnable {
 		shopTexturedModel.getTexture().setReflectivity(1);
 		shopTexturedModel.getTexture().setAmbient(0.5f);
 
-		Entity shop = new Entity(shopTexturedModel, new Vector3f(0, 0, -50f),
-				0, 0, 0, 1);
+		float x = 1250;
+		float z = 2000;
+		float y = terrains[(int) (x/Terrain.SIZE)][(int) (z/Terrain.SIZE)].getHeightOfTerrain(x, z);
+		Entity shop = new Entity(shopTexturedModel, new Vector3f(x,y,z), 0, 0, 0, 1);
 		shop.increaseRotation(0, 180, 0);
 		
-		// create grass on terrain
-
-		data = OBJFileLoader.loadOBJ("res/grass-model.obj");
-		TexturedModel grassTexturedModel = new TexturedModel(loader.loadToVao(
-				data.getVertices(), data.getTextureCoords(), data.getNormals(),
-				data.getIndices()), new ModelTexture(
-				loader.loadTexture("res/grass-model-texture.png")));
-		grassTexturedModel.getTexture().setHasTransparency(true);
-		grassTexturedModel.getTexture().setUseFakeLighting(true);
-
 		// put all entities to draw in list
-
-		List<Entity> entities = new ArrayList<>();
-
-		Random random = new Random();
-		for (int i = 0; i < 500; i++) {
-			entities.add(new Entity(grassTexturedModel, new Vector3f(random
-					.nextFloat() * 800 - 400, 0, random.nextFloat() * -600), 0,
-					0, 0, 1));
-		}
 		entities.add(shop);
 
 		// main loop
@@ -126,9 +114,11 @@ public class Main implements Runnable {
 			for (Entity entity : entities) {
 				renderer.processEntity(entity);
 			}
-			renderer.processTerrain(terrain1);
-			renderer.processTerrain(terrain2);
-			renderer.processTerrain(terrain3);
+			for(int i = 0; i<terrains.length; i++){
+				for(int j=0; j<terrains[i].length; j++){
+					renderer.processTerrain(terrains[i][j]);
+				}
+			}
 
 			renderer.render(lights, camera);
 
