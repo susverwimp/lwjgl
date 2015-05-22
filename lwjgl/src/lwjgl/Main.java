@@ -99,13 +99,36 @@ public class Main implements Runnable {
 
 		float x = 1250;
 		float z = 2000;
-		float y = terrains[(int) (x/Terrain.SIZE)][(int) (z/Terrain.SIZE)].getHeightOfTerrain(x, z);
+		int terrainColumn = (int) (x/Terrain.SIZE);
+		int terrainRow = (int) (z/Terrain.SIZE);
+		float y = terrains[terrainColumn][terrainRow].getHeightOfTerrain(x, z);
 		Entity shop = new Entity(shopTexturedModel, new Vector3f(x,y,z), 0, 0, 0, 1);
 		shop.increaseRotation(0, 180, 0);
 		
 		// put all entities to draw in list
 		entities.add(shop);
 
+		//add fern
+		ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("res/fern-model-texture.png"));
+		fernTextureAtlas.setNumberOfRows(2);
+		
+		data = OBJFileLoader.loadOBJ("res/fern-model.obj");
+		TexturedModel fern = new TexturedModel(loader.loadToVao(
+				data.getVertices(), data.getTextureCoords(), data.getNormals(),
+				data.getIndices()), fernTextureAtlas);
+		
+		Random random = new Random(676452);
+		for(int i =0; i<3000; i++){
+			if(i%2 == 0){
+				x = random.nextFloat() * terrains.length * Terrain.SIZE;
+				z = random.nextFloat() * terrains[0].length * Terrain.SIZE;
+				terrainColumn = (int) (x/Terrain.SIZE);
+				terrainRow = (int) (z/Terrain.SIZE);
+				y = terrains[terrainColumn][terrainRow].getHeightOfTerrain(x, z);
+				entities.add(new Entity(fern, random.nextInt(4), new Vector3f(x, y, z), 0, 0, 0, 1));
+			}
+		}
+		
 		// main loop
 
 		while (isRunning) {

@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import math.Matrix4f;
+import math.Vector2f;
 import math.Vector3f;
 
 import org.lwjgl.BufferUtils;
@@ -72,6 +73,10 @@ public abstract class ShaderProgram {
 	
 	protected void loadVector(int location, Vector3f vector){
 		GL20.glUniform3f(location, vector.x, vector.y, vector.z);
+	}
+	
+	protected void load2DVector(int location, Vector2f vector){
+		GL20.glUniform2f(location, vector.x, vector.y);
 	}
 	
 	protected void loadBoolean(int location, boolean value){

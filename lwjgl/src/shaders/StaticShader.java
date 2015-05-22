@@ -6,6 +6,7 @@ import entities.Camera;
 import entities.Light;
 import math.Maths;
 import math.Matrix4f;
+import math.Vector2f;
 import math.Vector3f;
 
 public class StaticShader extends ShaderProgram {
@@ -26,6 +27,8 @@ public class StaticShader extends ShaderProgram {
 	private int location_ambient;
 	private int location_useFakeLighting;
 	private int location_skyColor;
+	private int location_numberOfRows;
+	private int location_offset;
 	
 	
 	public StaticShader() {
@@ -50,6 +53,9 @@ public class StaticShader extends ShaderProgram {
 		location_useFakeLighting = super.getUniformLocation("useFakeLighting");
 		location_skyColor = super.getUniformLocation("skyColor");
 		
+		location_numberOfRows = super.getUniformLocation("numberOfRows");
+		location_offset = super.getUniformLocation("offset");
+		
 		location_lightPosition = new int[MAX_LIGHTS];
 		location_lightColor = new int[MAX_LIGHTS];
 		location_attenuation = new int[MAX_LIGHTS];
@@ -58,6 +64,14 @@ public class StaticShader extends ShaderProgram {
 			location_lightColor[i] = super.getUniformLocation("lightColor["+i+"]");
 			location_attenuation[i] = super.getUniformLocation("attenuation["+i+"]");
 		}
+	}
+	
+	public void loadNumberOfRows(int numberOfRows){
+		super.loadFloat(location_numberOfRows, numberOfRows);
+	}
+	
+	public void loadOffset(float x, float y){
+		super.load2DVector(location_offset, new Vector2f(x, y));
 	}
 	
 	public void loadTransformationMatrix(Matrix4f matrix){
