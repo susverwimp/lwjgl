@@ -104,6 +104,7 @@ public class Window {
 	public void cleanUp() {
 		keyCallback.release();
 		GLFW.glfwTerminate();
+		GLFW.glfwDestroyWindow(window);
 	}
 
 	public long getWindow() {
