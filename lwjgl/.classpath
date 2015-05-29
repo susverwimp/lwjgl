@@ -2,9 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="lib" path="D:/nas/kamidesigns/lwjgl/lwjgl/libs/lwjgl/jar/lwjgl.jar" sourcepath="D:/nas/kamidesigns/lwjgl/lwjgl/libs/lwjgl/src.zip">
+	<classpathentry kind="lib" path="libs/lwjgl/jar/lwjgl.jar" sourcepath="libs/lwjgl/src.zip">
 		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="D:/nas/kamidesigns/lwjgl/lwjgl/libs/lwjgl/native"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="lwjgl/libs/lwjgl/native"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
