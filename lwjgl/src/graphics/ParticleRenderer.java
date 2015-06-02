@@ -1,6 +1,5 @@
 package graphics;
 
-import entities.Entity;
 import entities.Particle;
 
 import java.util.List;
