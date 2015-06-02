@@ -11,7 +11,7 @@ public class Entity {
 	private float scale;
 	
 	private int textureIndex;
-
+	
 	public Entity(TexturedModel model, Vector3f position, float rotX, float rotY,
 			float rotZ, float scale) {
 		this(model, 0, position, rotX, rotY, rotZ, scale);
@@ -97,5 +97,5 @@ public class Entity {
 	public void setScale(float scale) {
 		this.scale = scale;
 	}
-
+	
 }

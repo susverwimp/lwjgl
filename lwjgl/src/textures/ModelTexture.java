@@ -17,6 +17,11 @@ public class ModelTexture {
 		this.textureId = textureId;
 	}
 	
+	public ModelTexture(int textureId, int numberOfRows){
+		this.textureId = textureId;
+		this.numberOfRows = numberOfRows;
+	}
+	
 	public int getNumberOfRows() {
 		return numberOfRows;
 	}

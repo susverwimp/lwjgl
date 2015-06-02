@@ -27,6 +27,7 @@ public class Window {
 	private GameAction down;
 	private GameAction forward;
 	private GameAction backward;
+	private GameAction wireframe;
 
 	public Window(int width, int height, String title) {
 		this.width = width;
@@ -73,6 +74,9 @@ public class Window {
 
 	public void update(Camera camera) {
 		GLFW.glfwPollEvents();
+		if(wireframe.isPressed()){
+			MasterRenderer.wireframe();
+		}
 		if (left.isPressed()) {
 			camera.getPosition().x -= 0.5f;
 		}
@@ -118,6 +122,7 @@ public class Window {
 		down = new GameAction("down");
 		forward = new GameAction("forward");
 		backward = new GameAction("backward");
+		wireframe = new GameAction("wireframe", GameAction.DETECT_INITAL_PRESS_ONLY);
 
 		keyCallback.setGameAction(left, GLFW.GLFW_KEY_A);
 		keyCallback.setGameAction(right, GLFW.GLFW_KEY_D);
@@ -125,5 +130,6 @@ public class Window {
 		keyCallback.setGameAction(down, GLFW.GLFW_KEY_S);
 		keyCallback.setGameAction(forward, GLFW.GLFW_KEY_Z);
 		keyCallback.setGameAction(backward, GLFW.GLFW_KEY_X);
+		keyCallback.setGameAction(wireframe, GLFW.GLFW_KEY_SPACE);
 	}
 }

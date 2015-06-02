@@ -10,8 +10,10 @@ import org.lwjgl.opengl.GL11;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
+import entities.Particle;
 import math.Matrix4f;
 import models.TexturedModel;
+import shaders.ParticleShader;
 import shaders.StaticShader;
 import shaders.TerrainShader;
 import terrains.Terrain;
@@ -26,6 +28,8 @@ public class MasterRenderer {
 	private static final float GREEN = 0.1f;
 	private static final float BLUE = 0.4f;
 	
+	private static boolean wireframe = false;
+	
 	private Matrix4f projectionMatrix;
 	
 	private StaticShader shader = new StaticShader();
@@ -34,15 +38,19 @@ public class MasterRenderer {
 	private TerrainRenderer terrainRenderer;
 	private TerrainShader terrainShader = new TerrainShader();
 	
-	private Map<TexturedModel, List<Entity>> entities = new HashMap<TexturedModel, List<Entity>>();
-	private List<Terrain> terrains = new ArrayList<>();
+	private ParticleRenderer particleRenderer;
+	private ParticleShader particleShader = new ParticleShader();
 	
+	private Map<TexturedModel, List<Entity>> entities = new HashMap<TexturedModel, List<Entity>>();
+	private Map<TexturedModel, List<Particle>> particles = new HashMap<TexturedModel, List<Particle>>();
+	private List<Terrain> terrains = new ArrayList<>();
 	
 	public MasterRenderer(){
 		enableCulling();
 		createProjectionMatrix();
 		renderer = new EntityRenderer(shader, projectionMatrix);
 		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
+		particleRenderer = new ParticleRenderer(particleShader, projectionMatrix);
 	}
 	
 	public static void enableCulling(){
@@ -54,6 +62,16 @@ public class MasterRenderer {
 		GL11.glDisable(GL11.GL_CULL_FACE);
 	}
 	
+	public static void wireframe(){
+		if(!wireframe){
+			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+			wireframe = true;
+		}else{
+			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+			wireframe = false;
+		}
+	}
+	
 	public void render(List<Light> lights, Camera camera){
 		prepare();
 		shader.start();
@@ -63,6 +81,13 @@ public class MasterRenderer {
 		renderer.render(entities);
 		shader.stop();
 		
+		particleShader.start();
+		particleShader.loadSkyColor(RED, GREEN, BLUE);
+		particleShader.loadLights(lights);
+		particleShader.loadViewMatrix(camera);
+		particleRenderer.render(particles);
+		particleShader.stop();
+		
 		terrainShader.start();
 		terrainShader.loadSkyColor(RED, GREEN, BLUE);
 		terrainShader.loadLights(lights);
@@ -70,6 +95,7 @@ public class MasterRenderer {
 		terrainRenderer.render(terrains);
 		terrainShader.stop();
 		
+		particles.clear();
 		terrains.clear();
 		entities.clear();
 	}
@@ -90,10 +116,25 @@ public class MasterRenderer {
 		}
 	}
 	
+	public void processParticle(Particle particle){
+		TexturedModel entityModel = particle.getModel();
+		List<Particle> batch = particles.get(entityModel);
+		if(batch!=null){
+			batch.add(particle);
+		}else{
+			List<Particle> newBatch = new ArrayList<Particle>();
+			newBatch.add(particle);
+			particles.put(entityModel, newBatch);
+		}
+	}
+	
 	public void prepare() {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		GL11.glClearColor(RED, GREEN, BLUE, 1);
+		if(!wireframe)
+			GL11.glClearColor(RED, GREEN, BLUE, 1);
+		else
+			GL11.glClearColor(1, 1, 1, 1);
 	}
 	
 	private void createProjectionMatrix() {
@@ -114,6 +155,7 @@ public class MasterRenderer {
 	public void cleanUp(){
 		terrainShader.cleanUp();
 		shader.cleanUp();
+		particleShader.cleanUp();
 	}
 	
 

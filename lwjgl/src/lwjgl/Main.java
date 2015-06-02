@@ -4,12 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.lwjgl.glfw.GLFW;
+
+import math.Vector2f;
 import math.Vector3f;
 import models.ModelData;
 import models.TexturedModel;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
+import entities.Particle;
+import entities.ParticleEmitter;
 import terrains.Terrain;
 import textures.ModelTexture;
 import textures.TerrainTexture;
@@ -38,13 +43,13 @@ public class Main implements Runnable {
 		window.init();
 
 		Loader loader = new Loader();
-		
+
 		List<Entity> entities = new ArrayList<>();
 		List<Light> lights = new ArrayList<>();
-		
-		//create sun
-		Light sun = new Light(new Vector3f(1200, 1000, 1200), new Vector3f(
-				1, 1, 1));
+
+		// create sun
+		Light sun = new Light(new Vector3f(1200, 1000, 1200), new Vector3f(1,
+				1, 1));
 		lights.add(sun);
 
 		// create terrain textures and blendmap, used for multitexturing
@@ -110,7 +115,7 @@ public class Main implements Runnable {
 		fernTextureAtlas.setNumberOfRows(2);
 
 		// create fern
-		
+
 		data = OBJFileLoader.loadOBJ("res/fern-model.obj");
 		TexturedModel fernTexturedModel = new TexturedModel(loader.loadToVao(
 				data.getVertices(), data.getTextureCoords(), data.getNormals(),
@@ -125,12 +130,12 @@ public class Main implements Runnable {
 				terrainRow = (int) (z / Terrain.SIZE);
 				y = terrains[terrainColumn][terrainRow]
 						.getHeightOfTerrain(x, z);
-				entities.add(new Entity(fernTexturedModel, random.nextInt(4), new Vector3f(
-						x, y, z), 0, 0, 0, 1));
+				entities.add(new Entity(fernTexturedModel, random.nextInt(4),
+						new Vector3f(x, y, z), 0, 0, 0, 1));
 			}
 		}
-		
-		//create lamp with light
+
+		// create lamp with light
 		data = OBJFileLoader.loadOBJ("res/lamp-model.obj");
 		TexturedModel lampTexturedModel = new TexturedModel(loader.loadToVao(
 				data.getVertices(), data.getTextureCoords(), data.getNormals(),
@@ -145,17 +150,30 @@ public class Main implements Runnable {
 		Entity lamp = new Entity(lampTexturedModel, new Vector3f(x, y, z), 0,
 				0, 0, 1);
 		lamp.getModel().getTexture().setUseFakeLighting(true);
-		entities.add(new Entity(lampTexturedModel, new Vector3f(x, y, z), 0,
-				0, 0, 1));
-		Light light2 = new Light(new Vector3f(x, y+15, z), new Vector3f(2,
-				0, 0), new Vector3f(1, 0.01f, 0.002f));
+		entities.add(new Entity(lampTexturedModel, new Vector3f(x, y, z), 0, 0,
+				0, 1));
+		Light light2 = new Light(new Vector3f(x, y + 15, z), new Vector3f(2, 0,
+				0), new Vector3f(1, 0.01f, 0.002f));
 		lights.add(light2);
-		
-		// main loop
 
+		// create emitter
+		ParticleEmitter emitter = new ParticleEmitter(loader, new Vector3f(
+				1200, 2, 2390), 1, 5f, new Vector3f(0, -0.1f, 0), new Vector3f(
+				0, 0.1f, 0), 1, new Vector2f(-0.5f, 0.5f), new Vector2f(-0.5f,
+				0.5f), new Vector2f(-0.5f, 0.5f));
+		emitter.start();
+
+		double startTime = GLFW.glfwGetTime();
+
+		// main loop
 		while (isRunning) {
 			if (window.WindowShouldBeClosed())
 				isRunning = false;
+
+			double currentTime = GLFW.glfwGetTime();
+			float elapsedTime = (float) (currentTime - startTime);
+			startTime = currentTime;
+
 			for (Entity entity : entities) {
 				renderer.processEntity(entity);
 			}
@@ -164,11 +182,16 @@ public class Main implements Runnable {
 					renderer.processTerrain(terrains[i][j]);
 				}
 			}
+			emitter.update(elapsedTime);
+			for (Particle particle : emitter.getParticles()) {
+				renderer.processParticle(particle);
+			}
 
 			renderer.render(lights, camera);
 
 			window.update(camera);
 			window.swapBuffers();
+
 		}
 
 		renderer.cleanUp();
