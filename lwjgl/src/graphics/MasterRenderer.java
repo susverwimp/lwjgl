@@ -47,6 +47,7 @@ public class MasterRenderer {
 	
 	public MasterRenderer(){
 		enableCulling();
+		enableBlending();
 		createProjectionMatrix();
 		renderer = new EntityRenderer(shader, projectionMatrix);
 		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
@@ -60,6 +61,11 @@ public class MasterRenderer {
 	
 	public static void disableCulling(){
 		GL11.glDisable(GL11.GL_CULL_FACE);
+	}
+	
+	public static void enableBlending(){
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 	}
 	
 	public static void wireframe(){

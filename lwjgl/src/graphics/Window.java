@@ -1,16 +1,15 @@
 package graphics;
 
-import input.GameAction;
-import input.Input;
-
 import java.nio.ByteBuffer;
 
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWCursorPosCallback;
+import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWvidmode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 
-import entities.Camera;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 public class Window {
@@ -18,16 +17,25 @@ public class Window {
 	private int width;
 	private int height;
 	private String title;
-	private Input keyCallback;
 	private long window;
 	
-	private GameAction left;
-	private GameAction right;
-	private GameAction up;
-	private GameAction down;
-	private GameAction forward;
-	private GameAction backward;
-	private GameAction wireframe;
+	
+	private static final int MAX_KEYS = 1024;
+	private static final int MAX_MOUSE_BUTTONS = 32; 
+	
+	private boolean[] keys = new boolean[MAX_KEYS];
+	private boolean[] mouseButtons = new boolean[MAX_MOUSE_BUTTONS];
+	
+	private double mouseX;
+	private double mouseY;
+	private double mouseDX;
+	private double mouseDY;
+	
+	private GLFWKeyCallback keyCallback;
+	private GLFWMouseButtonCallback mouseButtonCallback;
+	private GLFWCursorPosCallback cursorPosCallback;
+	
+	private static final int FPS_CAP = 120;
 
 	public Window(int width, int height, String title) {
 		this.width = width;
@@ -50,12 +58,33 @@ public class Window {
 
 		if (window == NULL) {
 			System.out.println("window is not created");
+			GLFW.glfwTerminate();
 			return false;
 		}
-
-		GLFW.glfwSetKeyCallback(window, keyCallback = new Input());
-
-		createGameActions();
+		
+		GLFW.glfwSetKeyCallback(window, keyCallback = new GLFWKeyCallback() {
+			@Override
+			public void invoke(long window, int key, int scancode, int action, int mods) {
+				keys[key] = action!=GLFW.GLFW_RELEASE;
+			}
+		});
+		GLFW.glfwSetMouseButtonCallback(window, mouseButtonCallback = new GLFWMouseButtonCallback() {
+			@Override
+			public void invoke(long window, int button, int action, int mods) {
+				mouseButtons[button] = action != GLFW.GLFW_RELEASE;
+			}
+		});
+		GLFW.glfwSetCursorPosCallback(window, cursorPosCallback = new GLFWCursorPosCallback() {
+			@Override
+			public void invoke(long window, double xpos, double ypos) {
+				double oldMouseX = mouseX;
+				double oldMouseY = mouseY;
+				mouseX = xpos;
+				mouseY = ypos;
+				mouseDX = mouseX - oldMouseX;
+				mouseDY = mouseY - oldMouseY;
+			}
+		});
 
 		// Get the resolution of the primary monitor
 		ByteBuffer vidmode = GLFW
@@ -65,36 +94,20 @@ public class Window {
 
 		// Make the OpenGL context current
 		GLFW.glfwMakeContextCurrent(window);
+		
+		GLFW.glfwSwapInterval(1);
+		
 		GLFW.glfwShowWindow(window);
-
+		
 		GLContext.createFromCurrent();
 
 		return true;
 	}
 
-	public void update(Camera camera) {
+	public void update() {
+		mouseDX = 0;
+		mouseDY = 0;
 		GLFW.glfwPollEvents();
-		if(wireframe.isPressed()){
-			MasterRenderer.wireframe();
-		}
-		if (left.isPressed()) {
-			camera.getPosition().x -= 0.5f;
-		}
-		if (right.isPressed()) {
-			camera.getPosition().x += 0.5f;
-		}
-		if (up.isPressed()) {
-			camera.getPosition().y += 0.5f;
-		}
-		if (down.isPressed()) {
-			camera.getPosition().y -= 0.5f;
-		}
-		if (forward.isPressed()) {
-			camera.getPosition().z -= 0.5f;
-		}
-		if (backward.isPressed()) {
-			camera.getPosition().z += 0.5f;
-		}
 	}
 
 	public void swapBuffers() {
@@ -107,29 +120,41 @@ public class Window {
 
 	public void cleanUp() {
 		keyCallback.release();
-		GLFW.glfwTerminate();
+		mouseButtonCallback.release();
+		cursorPosCallback.release();
 		GLFW.glfwDestroyWindow(window);
+		GLFW.glfwTerminate();
 	}
 
 	public long getWindow() {
 		return window;
 	}
-
-	private void createGameActions() {
-		left = new GameAction("left");
-		right = new GameAction("right");
-		up = new GameAction("up");
-		down = new GameAction("down");
-		forward = new GameAction("forward");
-		backward = new GameAction("backward");
-		wireframe = new GameAction("wireframe", GameAction.DETECT_INITAL_PRESS_ONLY);
-
-		keyCallback.setGameAction(left, GLFW.GLFW_KEY_A);
-		keyCallback.setGameAction(right, GLFW.GLFW_KEY_D);
-		keyCallback.setGameAction(up, GLFW.GLFW_KEY_W);
-		keyCallback.setGameAction(down, GLFW.GLFW_KEY_S);
-		keyCallback.setGameAction(forward, GLFW.GLFW_KEY_Z);
-		keyCallback.setGameAction(backward, GLFW.GLFW_KEY_X);
-		keyCallback.setGameAction(wireframe, GLFW.GLFW_KEY_SPACE);
+	
+	public boolean isKeyPressed(int key){
+		return keys[key];
+	}
+	
+	public boolean isMouseButtonPressed(int mouseButton){
+		return mouseButtons[mouseButton];
+	}
+	
+	public double getMouseX(){
+		return mouseX;
+	}
+	
+	public double getMouseY(){
+		return mouseY;
+	}
+	
+	public double getMouseDX(){
+		return mouseDX;
+	}
+	
+	public double getMouseDY(){
+		return mouseDY;
+	}
+	
+	public float getTime(){
+		return (float) GLFW.glfwGetTime();
 	}
 }

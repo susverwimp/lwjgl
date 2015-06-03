@@ -40,7 +40,8 @@ public class Main implements Runnable {
 		// initialize glfw window
 
 		Window window = new Window(1280, 720, "Open World");
-		window.init();
+		if(!window.init())
+			System.exit(1);
 
 		Loader loader = new Loader();
 
@@ -163,15 +164,15 @@ public class Main implements Runnable {
 				0.5f), new Vector2f(-0.5f, 0.5f));
 		emitter.start();
 
-		double startTime = GLFW.glfwGetTime();
+		float startTime = window.getTime();
 
 		// main loop
 		while (isRunning) {
 			if (window.WindowShouldBeClosed())
 				isRunning = false;
 
-			double currentTime = GLFW.glfwGetTime();
-			float elapsedTime = (float) (currentTime - startTime);
+			float currentTime = window.getTime();
+			float elapsedTime = currentTime - startTime;
 			startTime = currentTime;
 
 			for (Entity entity : entities) {
@@ -189,16 +190,38 @@ public class Main implements Runnable {
 
 			renderer.render(lights, camera);
 
-			window.update(camera);
+			checkEvents(window, camera);
 			window.swapBuffers();
-
 		}
 
 		renderer.cleanUp();
 		loader.cleanUp();
 		window.cleanUp();
 	}
-
+	
+	private void checkEvents(Window window, Camera camera){
+		window.update();
+		if (window.isKeyPressed(GLFW.GLFW_KEY_A)) {
+			camera.getPosition().x -= 0.5f;
+		}
+		if (window.isKeyPressed(GLFW.GLFW_KEY_D)) {
+			camera.getPosition().x += 0.5f;
+		}
+		if (window.isKeyPressed(GLFW.GLFW_KEY_W)) {
+			camera.getPosition().y += 0.5f;
+		}
+		if (window.isKeyPressed(GLFW.GLFW_KEY_S)) {
+			camera.getPosition().y -= 0.5f;
+		}
+		if (window.isKeyPressed(GLFW.GLFW_KEY_Z)) {
+			camera.getPosition().z -= 0.5f;
+		}
+		if (window.isKeyPressed(GLFW.GLFW_KEY_X)) {
+			camera.getPosition().z += 0.5f;
+		}
+		
+	}
+	
 	public static void main(String[] args) {
 		new Main().start();
 	}
