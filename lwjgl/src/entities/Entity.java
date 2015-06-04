@@ -98,4 +98,17 @@ public class Entity {
 		this.scale = scale;
 	}
 	
+	protected int getTextureIndex(){
+		return textureIndex;
+	}
+	
+	protected void increaseTextureIndex(){
+		int numberOfRows = model.getTexture().getNumberOfRows();
+		if(textureIndex < numberOfRows * numberOfRows - 1)
+			textureIndex++;
+		else
+			textureIndex = 0;
+		
+	}
+	
 }

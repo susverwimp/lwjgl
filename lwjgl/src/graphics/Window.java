@@ -6,6 +6,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
+import org.lwjgl.glfw.GLFWScrollCallback;
 import org.lwjgl.glfw.GLFWvidmode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
@@ -31,12 +32,14 @@ public class Window {
 	private double mouseDX;
 	private double mouseDY;
 	
+	private double scrollDX;
+	private double scrollDY;
+	
 	private GLFWKeyCallback keyCallback;
 	private GLFWMouseButtonCallback mouseButtonCallback;
 	private GLFWCursorPosCallback cursorPosCallback;
+	private GLFWScrollCallback scrollCallback;
 	
-	private static final int FPS_CAP = 120;
-
 	public Window(int width, int height, String title) {
 		this.width = width;
 		this.height = height;
@@ -85,6 +88,13 @@ public class Window {
 				mouseDY = mouseY - oldMouseY;
 			}
 		});
+		GLFW.glfwSetScrollCallback(window, scrollCallback = new GLFWScrollCallback() {
+			@Override
+			public void invoke(long window, double xoffset, double yoffset) {
+				scrollDX = xoffset;
+				scrollDY = yoffset;
+			}
+		});
 
 		// Get the resolution of the primary monitor
 		ByteBuffer vidmode = GLFW
@@ -107,6 +117,8 @@ public class Window {
 	public void update() {
 		mouseDX = 0;
 		mouseDY = 0;
+		scrollDX = 0;
+		scrollDY = 0;
 		GLFW.glfwPollEvents();
 	}
 
@@ -138,20 +150,28 @@ public class Window {
 		return mouseButtons[mouseButton];
 	}
 	
-	public double getMouseX(){
-		return mouseX;
+	public float getMouseX(){
+		return (float) mouseX;
 	}
 	
-	public double getMouseY(){
-		return mouseY;
+	public float getMouseY(){
+		return (float) mouseY;
 	}
 	
-	public double getMouseDX(){
-		return mouseDX;
+	public float getMouseDX(){
+		return (float) mouseDX;
 	}
 	
-	public double getMouseDY(){
-		return mouseDY;
+	public float getMouseDY(){
+		return (float) mouseDY;
+	}
+	
+	public float getScrollDX(){
+		return (float) scrollDX;
+	}
+	
+	public float getScrollDY(){
+		return (float) scrollDY;
 	}
 	
 	public float getTime(){

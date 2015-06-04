@@ -19,7 +19,7 @@ import textures.ModelTexture;
 
 public class ParticleRenderer {
 	
-	private ParticleShader shader;
+private ParticleShader shader;
 	
 	public ParticleRenderer(ParticleShader shader, Matrix4f projectionMatrix) {
 		this.shader = shader;
@@ -53,8 +53,6 @@ public class ParticleRenderer {
 		shader.loadNumberOfRows(texture.getNumberOfRows());
 		if(texture.isHasTransparency())
 			MasterRenderer.disableCulling();
-		shader.loadFakeLightingVariable(texture.isUseFakeLighting());
-		shader.loadShineVariables(texture.getShineDamper(), texture.getReflectivity(), texture.getAmbient());
 		
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getTexture().getTextureId());
@@ -74,7 +72,8 @@ public class ParticleRenderer {
 				particle.getPosition(), particle.getRotX(), particle.getRotY(),
 				particle.getRotZ(), particle.getScale());
 		shader.loadTransformationMatrix(transformationMatrix);
-		shader.loadOffset(particle.getTextureXOffset(), particle.getTextureYOffset());
+		shader.loadOffset(particle.getTextureXOffset(), particle.getTextureYOffset(), particle.getTextureXOffset2(), particle.getTextureYOffset2());
+		shader.loadBlendFactor(particle.getBlendFactor());
 	}
 
 }

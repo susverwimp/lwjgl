@@ -1,6 +1,8 @@
 package lwjgl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -15,6 +17,7 @@ import entities.Entity;
 import entities.Light;
 import entities.Particle;
 import entities.ParticleEmitter;
+import entities.Player;
 import terrains.Terrain;
 import textures.ModelTexture;
 import textures.TerrainTexture;
@@ -40,7 +43,7 @@ public class Main implements Runnable {
 		// initialize glfw window
 
 		Window window = new Window(1280, 720, "Open World");
-		if(!window.init())
+		if (!window.init())
 			System.exit(1);
 
 		Loader loader = new Loader();
@@ -83,7 +86,7 @@ public class Main implements Runnable {
 
 		// create camera
 
-		Camera camera = new Camera(new Vector3f(1200, 1, 2400));
+		
 
 		MasterRenderer renderer = new MasterRenderer();
 
@@ -158,12 +161,18 @@ public class Main implements Runnable {
 		lights.add(light2);
 
 		// create emitter
-		ParticleEmitter emitter = new ParticleEmitter(loader, new Vector3f(
-				1200, 2, 2390), 1, 5f, new Vector3f(0, -0.1f, 0), new Vector3f(
-				0, 0.1f, 0), 1, new Vector2f(-0.5f, 0.5f), new Vector2f(-0.5f,
-				0.5f), new Vector2f(-0.5f, 0.5f));
-		emitter.start();
-
+		ParticleEmitter iceConeEmitter = new ParticleEmitter(loader, new Vector3f(
+				1200, 5, 2390), 9, 2, new Vector3f(-0.1f, 0, 0),
+				new Vector3f(-0.1f,0,0), 1, new Vector2f(), new Vector2f(-0.5f,0.5f),
+				new Vector2f(-0.05f, 0.05f), new Vector2f(-0.2f, 0.2f));
+		iceConeEmitter.start();
+		
+		//create player
+		Player player = new Player(lampTexturedModel, 0, new Vector3f(1200,3,2350), 0, 0, 0, 1);
+		
+		//create camera to player
+		Camera camera = new Camera(player);
+		
 		float startTime = window.getTime();
 
 		// main loop
@@ -174,7 +183,14 @@ public class Main implements Runnable {
 			float currentTime = window.getTime();
 			float elapsedTime = currentTime - startTime;
 			startTime = currentTime;
+			
+			camera.update(window);
+			terrainColumn = (int) (player.getPosition().x / Terrain.SIZE);
+			terrainRow = (int) (player.getPosition().z / Terrain.SIZE);
+			player.update(window, elapsedTime, terrains[terrainColumn][terrainRow]);
+			iceConeEmitter.update(elapsedTime);
 
+			renderer.processEntity(player);
 			for (Entity entity : entities) {
 				renderer.processEntity(entity);
 			}
@@ -183,14 +199,14 @@ public class Main implements Runnable {
 					renderer.processTerrain(terrains[i][j]);
 				}
 			}
-			emitter.update(elapsedTime);
-			for (Particle particle : emitter.getParticles()) {
+			List<Particle> particles = sortParticles(iceConeEmitter.getParticles(), camera);
+			for (Particle particle : particles) {
 				renderer.processParticle(particle);
 			}
 
 			renderer.render(lights, camera);
 
-			checkEvents(window, camera);
+			window.update();
 			window.swapBuffers();
 		}
 
@@ -198,30 +214,44 @@ public class Main implements Runnable {
 		loader.cleanUp();
 		window.cleanUp();
 	}
-	
-	private void checkEvents(Window window, Camera camera){
+
+	private void checkEvents(Window window, Camera camera) {
 		window.update();
-		if (window.isKeyPressed(GLFW.GLFW_KEY_A)) {
-			camera.getPosition().x -= 0.5f;
-		}
-		if (window.isKeyPressed(GLFW.GLFW_KEY_D)) {
-			camera.getPosition().x += 0.5f;
-		}
-		if (window.isKeyPressed(GLFW.GLFW_KEY_W)) {
-			camera.getPosition().y += 0.5f;
-		}
-		if (window.isKeyPressed(GLFW.GLFW_KEY_S)) {
-			camera.getPosition().y -= 0.5f;
-		}
-		if (window.isKeyPressed(GLFW.GLFW_KEY_Z)) {
-			camera.getPosition().z -= 0.5f;
-		}
-		if (window.isKeyPressed(GLFW.GLFW_KEY_X)) {
-			camera.getPosition().z += 0.5f;
-		}
-		
+//		if (window.isKeyPressed(GLFW.GLFW_KEY_A)) {
+//			camera.getPosition().x -= 0.5f;
+//		}
+//		if (window.isKeyPressed(GLFW.GLFW_KEY_D)) {
+//			camera.getPosition().x += 0.5f;
+//		}
+//		if (window.isKeyPressed(GLFW.GLFW_KEY_W)) {
+//			camera.getPosition().y += 0.5f;
+//		}
+//		if (window.isKeyPressed(GLFW.GLFW_KEY_S)) {
+//			camera.getPosition().y -= 0.5f;
+//		}
+//		if (window.isKeyPressed(GLFW.GLFW_KEY_Z)) {
+//			camera.getPosition().z -= 0.5f;
+//		}
+//		if (window.isKeyPressed(GLFW.GLFW_KEY_X)) {
+//			camera.getPosition().z += 0.5f;
+//		}
 	}
 	
+	private List<Particle> sortParticles(List<Particle> particles, Camera camera){
+		Collections.sort(particles, new Comparator<Particle>() {
+			@Override
+			public int compare(Particle particle1, Particle particle2) {
+				return (int) ((lengthBetween2Vec3(camera.getPosition(), particle1.getPosition()) - lengthBetween2Vec3(camera.getPosition(), particle2.getPosition()))*1000);
+			}
+		});;
+		
+		return particles;
+	}
+	
+	private float lengthBetween2Vec3(Vector3f point1, Vector3f point2){
+		return (float) Math.sqrt((point1.x + point2.x)*(point1.x + point2.x)+(point1.y + point2.y)*(point1.y + point2.y)+(point1.z + point2.z)*(point1.z + point2.z));
+	}
+
 	public static void main(String[] args) {
 		new Main().start();
 	}

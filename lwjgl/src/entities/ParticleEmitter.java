@@ -13,8 +13,6 @@ import textures.ModelTexture;
 
 public class ParticleEmitter {
 
-	private static final int MAX_PARTICLES = 1000;
-
 	private static Random randomGenerator = new Random();
 	private final List<Particle> particles = new ArrayList<>();
 	private int spawningRate;
@@ -26,6 +24,7 @@ public class ParticleEmitter {
 	private Vector2f randomXBoundaries;
 	private Vector2f randomYBoundaries;
 	private Vector2f randomZBoundaries;
+	private Vector2f randomExpireTimeBoundaries;
 
 	private boolean start = false;
 
@@ -34,13 +33,14 @@ public class ParticleEmitter {
 	public ParticleEmitter(Loader loader, Vector3f position) {
 		this(loader, position, 3, 1, new Vector3f(), new Vector3f(), 1,
 				new Vector2f(-0.5f, 0.5f), new Vector2f(-0.5f, 0.5f),
-				new Vector2f(-0.5f, 0.5f));
+				new Vector2f(-0.5f, 0.5f), new Vector2f(-0.5f, 0.5f));
 	}
 
 	public ParticleEmitter(Loader loader, Vector3f position, int spawningRate,
 			float particleLifeTime, Vector3f gravity, Vector3f initialVelocity,
 			float velocityModifier, Vector2f randomXBoundaries,
-			Vector2f randomYBoundaries, Vector2f randomZBoundaries) {
+			Vector2f randomYBoundaries, Vector2f randomZBoundaries,
+			Vector2f randomExpireTimeBoundaries) {
 		this.gravity = gravity;
 		this.position = position;
 		this.initialVelocity = initialVelocity;
@@ -52,12 +52,14 @@ public class ParticleEmitter {
 		this.randomYBoundaries = randomYBoundaries;
 		this.randomZBoundaries = randomZBoundaries;
 
+		this.randomExpireTimeBoundaries = randomExpireTimeBoundaries;
+
 		model = new TexturedModel(loader.loadToVao(new float[] { -0.1f, 0.1f,
 				0f, -0.1f, -0.1f, 0f, 0.1f, -0.1f, 0f, 0.1f, 0.1f, 0f },
 				new float[] { 0f, 0f, 0f, 1f, 1f, 1f, 1f, 0f }, new float[] {
 						0f, 0f, 1f, 0f, 0f, 1f, 0f, 0f, 1f, 0f, 0f, 1f },
 				new int[] { 0, 1, 3, 3, 1, 2 }), new ModelTexture(
-				loader.loadTexture("res/particles.png"), 2));
+				loader.loadTexture("res/snow-particle.png"), 2));
 	}
 
 	private Particle generateNewParticle(float dx, float dy, float dz) {
@@ -70,13 +72,18 @@ public class ParticleEmitter {
 		float randomZ = randomGenerator.nextFloat()
 				* Math.abs(randomZBoundaries.x - randomZBoundaries.y)
 				+ randomZBoundaries.x;
+		float randomLifeTime = randomGenerator.nextFloat()
+				* Math.abs(randomExpireTimeBoundaries.x
+						- randomExpireTimeBoundaries.y)
+				+ randomExpireTimeBoundaries.x;
 		Vector3f particleVelocity = new Vector3f(initialVelocity.x
 				* velocityModifier + randomX / 10 + dx, initialVelocity.y
 				* velocityModifier + randomY / 10 + dy, initialVelocity.z
 				* velocityModifier + randomZ / 10 + dz);
-		Particle particle = new Particle(model, randomGenerator.nextInt(4), new Vector3f(position.x,
-				position.y, position.z), 0, 0, 0, 1, particleVelocity,
-				particleLifeTime);
+		Particle particle = new Particle(model, new Vector3f(position.x,
+				position.y, position.z), 0, 0,
+				randomGenerator.nextFloat() * 360, 1, particleVelocity,
+				particleLifeTime + randomLifeTime);
 		particle.getModel().getTexture().setAmbient(1);
 		return particle;
 	}
