@@ -134,6 +134,7 @@ public class Window {
 		keyCallback.release();
 		mouseButtonCallback.release();
 		cursorPosCallback.release();
+		scrollCallback.release();
 		GLFW.glfwDestroyWindow(window);
 		GLFW.glfwTerminate();
 	}

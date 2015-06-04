@@ -14,8 +14,6 @@ public class Player extends Entity {
 	private static final float GRAVITY = -50;
 	private static final float JUMP_POWER = 30;
 	
-	private static final float TERRAIN_HEIGHT = 0;
-	
 	private float currentSpeed = 0;
 	private float currentTurnSpeed = 0;
 	private float upwardsSpeed = 0;
