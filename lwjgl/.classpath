@@ -7,5 +7,6 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="lwjgl/libs/lwjgl/native"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="libs/pngdecoder/PNGDecoder.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -42,7 +42,7 @@ public class Terrain {
 		BufferedImage image = null;
 
 		try {
-			image = ImageIO.read(new File("res/" + heightMap + ".png"));
+			image = ImageIO.read(new File(heightMap));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

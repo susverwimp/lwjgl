@@ -59,7 +59,7 @@ public class ParticleEmitter {
 				new float[] { 0f, 0f, 0f, 1f, 1f, 1f, 1f, 0f }, new float[] {
 						0f, 0f, 1f, 0f, 0f, 1f, 0f, 0f, 1f, 0f, 0f, 1f },
 				new int[] { 0, 1, 3, 3, 1, 2 }), new ModelTexture(
-				loader.loadTexture("res/snow-particle.png"), 2));
+				loader.loadTexture("res/particles/snow-particle.png"), 2));
 	}
 
 	private Particle generateNewParticle(float dx, float dy, float dz) {

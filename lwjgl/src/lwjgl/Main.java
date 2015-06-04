@@ -60,19 +60,19 @@ public class Main implements Runnable {
 		// terrains
 
 		TerrainTexture backgroundTexture = new TerrainTexture(
-				loader.loadTexture("res/grass-terrain-texture.png"));
+				loader.loadTexture("res/terrain/grass-terrain-texture.png"));
 		TerrainTexture rTexture = new TerrainTexture(
-				loader.loadTexture("res/dirt-terrain-texture.png"));
+				loader.loadTexture("res/terrain/dirt-terrain-texture.png"));
 		TerrainTexture gTexture = new TerrainTexture(
-				loader.loadTexture("res/flowergrass-terrain-texture.png"));
+				loader.loadTexture("res/terrain/flowergrass-terrain-texture.png"));
 		TerrainTexture bTexture = new TerrainTexture(
-				loader.loadTexture("res/rock-terrain-texture.png"));
+				loader.loadTexture("res/terrain/rock-terrain-texture.png"));
 
 		TerrainTexturePack texturePack = new TerrainTexturePack(
 				backgroundTexture, rTexture, gTexture, bTexture);
 
 		TerrainTexture blendMap = new TerrainTexture(
-				loader.loadTexture("res/blendmap.png"));
+				loader.loadTexture("res/terrain/blendmap.png"));
 
 		// create terrains
 
@@ -80,23 +80,19 @@ public class Main implements Runnable {
 		for (int i = 0; i < terrains.length; i++) {
 			for (int j = 0; j < terrains[i].length; j++) {
 				terrains[i][j] = new Terrain(i, j, loader, texturePack,
-						blendMap, "heightmap");
+						blendMap, "res/terrain/heightmap.png");
 			}
 		}
 
-		// create camera
-
-		
-
-		MasterRenderer renderer = new MasterRenderer();
+		MasterRenderer renderer = new MasterRenderer(loader);
 
 		// create stall entity
 
-		ModelData data = OBJFileLoader.loadOBJ("res/stall-model.obj");
+		ModelData data = OBJFileLoader.loadOBJ("res/models/stall-model.obj");
 		TexturedModel shopTexturedModel = new TexturedModel(loader.loadToVao(
 				data.getVertices(), data.getTextureCoords(), data.getNormals(),
 				data.getIndices()), new ModelTexture(
-				loader.loadTexture("res/stall-model-texture.png")));
+				loader.loadTexture("res/models/stall-model-texture.png")));
 		shopTexturedModel.getTexture().setShineDamper(10);
 		shopTexturedModel.getTexture().setReflectivity(1);
 		shopTexturedModel.getTexture().setAmbient(0.5f);
@@ -115,12 +111,12 @@ public class Main implements Runnable {
 
 		// add fern
 		ModelTexture fernTextureAtlas = new ModelTexture(
-				loader.loadTexture("res/fern-model-texture.png"));
+				loader.loadTexture("res/models/fern-model-texture.png"));
 		fernTextureAtlas.setNumberOfRows(2);
 
 		// create fern
 
-		data = OBJFileLoader.loadOBJ("res/fern-model.obj");
+		data = OBJFileLoader.loadOBJ("res/models/fern-model.obj");
 		TexturedModel fernTexturedModel = new TexturedModel(loader.loadToVao(
 				data.getVertices(), data.getTextureCoords(), data.getNormals(),
 				data.getIndices()), fernTextureAtlas);
@@ -140,11 +136,11 @@ public class Main implements Runnable {
 		}
 
 		// create lamp with light
-		data = OBJFileLoader.loadOBJ("res/lamp-model.obj");
+		data = OBJFileLoader.loadOBJ("res/models/lamp-model.obj");
 		TexturedModel lampTexturedModel = new TexturedModel(loader.loadToVao(
 				data.getVertices(), data.getTextureCoords(), data.getNormals(),
 				data.getIndices()), new ModelTexture(
-				loader.loadTexture("res/lamp-model-texture.png")));
+				loader.loadTexture("res/models/lamp-model-texture.png")));
 
 		x = 1200;
 		z = 2300;
@@ -168,7 +164,7 @@ public class Main implements Runnable {
 		iceConeEmitter.start();
 		
 		//create player
-		Player player = new Player(lampTexturedModel, 0, new Vector3f(1200,3,2350), 0, 0, 0, 1);
+		Player player = new Player(lampTexturedModel, 0, new Vector3f(1200,3,2000), 0, 0, 0, 1);
 		
 		//create camera to player
 		Camera camera = new Camera(player);
@@ -215,28 +211,6 @@ public class Main implements Runnable {
 		window.cleanUp();
 	}
 
-	private void checkEvents(Window window, Camera camera) {
-		window.update();
-//		if (window.isKeyPressed(GLFW.GLFW_KEY_A)) {
-//			camera.getPosition().x -= 0.5f;
-//		}
-//		if (window.isKeyPressed(GLFW.GLFW_KEY_D)) {
-//			camera.getPosition().x += 0.5f;
-//		}
-//		if (window.isKeyPressed(GLFW.GLFW_KEY_W)) {
-//			camera.getPosition().y += 0.5f;
-//		}
-//		if (window.isKeyPressed(GLFW.GLFW_KEY_S)) {
-//			camera.getPosition().y -= 0.5f;
-//		}
-//		if (window.isKeyPressed(GLFW.GLFW_KEY_Z)) {
-//			camera.getPosition().z -= 0.5f;
-//		}
-//		if (window.isKeyPressed(GLFW.GLFW_KEY_X)) {
-//			camera.getPosition().z += 0.5f;
-//		}
-	}
-	
 	private List<Particle> sortParticles(List<Particle> particles, Camera camera){
 		Collections.sort(particles, new Comparator<Particle>() {
 			@Override
