@@ -7,11 +7,18 @@ import math.Vector3f;
 
 public class Camera {
 
+	private static final float MIN_DISTANCE_FROM_PLAYER = 5;
+	private static final float MAX_DISTANCE_FROM_PLAYER = 100;
+
+	private static final float MIN_PITCH = 0;
+	private static final float MAX_PITCH = 80;
+	
 	private float distanceFromPlayer = 50;
 	private float angleAroundPlayer = 0;
+	private float offsetY = 10;
 
 	private Vector3f position;
-	private float pitch;
+	private float pitch = 30;
 	private float yaw;
 	private float roll;
 
@@ -33,7 +40,7 @@ public class Camera {
 		float horizontalDistance = calculateHorizontalDistance();
 		float verticalDistance = calculateVerticalDistance();
 		calculateCameraPosition(horizontalDistance, verticalDistance);
-		yaw = 180 - (player.getRotY() + angleAroundPlayer);
+		yaw = (180 - (player.getRotY() + angleAroundPlayer)) % 360;
 	}
 
 	public Vector3f getPosition() {
@@ -61,7 +68,7 @@ public class Camera {
 				.toRadians(theta)));
 
 		position.x = player.getPosition().x - offsetX;
-		position.y = player.getPosition().y + verticalDistance;
+		position.y = player.getPosition().y + verticalDistance + offsetY;
 		position.z = player.getPosition().z - offsetZ;
 	}
 
@@ -76,12 +83,16 @@ public class Camera {
 	private void calculateZoom(Window window) {
 		float zoomLevel = window.getScrollDY() * 5;
 		distanceFromPlayer -= zoomLevel;
+		if(distanceFromPlayer < MIN_DISTANCE_FROM_PLAYER || distanceFromPlayer > MAX_DISTANCE_FROM_PLAYER)
+			distanceFromPlayer += zoomLevel;
 	}
 
 	private void calculatePitch(Window window) {
 		if (window.isMouseButtonPressed(GLFW.GLFW_MOUSE_BUTTON_2)) {
 			float pitchChange = window.getMouseDY() * 0.1f;
 			pitch += pitchChange;
+			if(pitch < MIN_PITCH || pitch > MAX_PITCH)
+				pitch -= pitchChange;
 		}
 	}
 

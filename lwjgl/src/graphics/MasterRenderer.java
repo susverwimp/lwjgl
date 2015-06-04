@@ -89,7 +89,7 @@ public class MasterRenderer {
 
 		particleShader.start();
 		particleShader.loadViewMatrix(camera);
-		particleRenderer.render(particles);
+		particleRenderer.render(particles, camera);
 		particleShader.stop();
 
 		skyboxRenderer.render(camera, RED, GREEN, BLUE);

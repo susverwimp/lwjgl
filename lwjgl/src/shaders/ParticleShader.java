@@ -53,8 +53,8 @@ public class ParticleShader extends ShaderProgram {
 	}
 	
 	public void loadViewMatrix(Camera camera){
-		Matrix4f viewMatrix = Maths.createViewMatrix(camera);
-		super.loadMatrix(location_viewMatrix, viewMatrix);
+		Matrix4f matrix = Maths.createViewMatrix(camera);
+		super.loadMatrix(location_viewMatrix, matrix);
 	}
 	
 	public void loadNumberOfRows(int numberOfRows){

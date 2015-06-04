@@ -1,8 +1,6 @@
 package lwjgl;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -157,25 +155,29 @@ public class Main implements Runnable {
 		lights.add(light2);
 
 		// create emitter
-		ParticleEmitter iceConeEmitter = new ParticleEmitter(loader, new Vector3f(
-				1200, 5, 2390), 9, 2, new Vector3f(-0.1f, 0, 0),
-				new Vector3f(-0.1f,0,0), 1, new Vector2f(), new Vector2f(-0.5f,0.5f),
-				new Vector2f(-0.05f, 0.05f), new Vector2f(-0.2f, 0.2f));
+		ParticleEmitter iceConeEmitter = new ParticleEmitter(loader,
+				new Vector3f(1200, 6, 2010), 9, 2, new Vector3f(-0.1f, 0, 0),
+				new Vector3f(-0.1f, 0, 0), 1, new Vector2f(), new Vector2f(
+						-0.5f, 0.5f), new Vector2f(-0.5f, 0.5f), new Vector2f(
+						-0.2f, 0.2f));
 		iceConeEmitter.start();
-		
-		//create player
-		Player player = new Player(lampTexturedModel, 0, new Vector3f(1200,3,2000), 0, 0, 0, 1);
-		
-		//create camera to player
+
+		// create player
+		Player player = new Player(lampTexturedModel, 0, new Vector3f(1200, 3,
+				2000), 0, 0, 0, 1);
+
+		// create camera to player
 		Camera camera = new Camera(player);
-		
-		//create GUIs
+
+		// create GUIs
 		List<GuiTexture> guis = new ArrayList<>();
-		GuiTexture gui = new GuiTexture(loader.loadTexture("res/terrain/blendmap.png"), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
+		GuiTexture gui = new GuiTexture(
+				loader.loadTexture("res/terrain/blendmap.png"), new Vector2f(
+						0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
 		guis.add(gui);
-		
+
 		GuiRenderer guiRenderer = new GuiRenderer(loader);
-		
+
 		float startTime = window.getTime();
 
 		// main loop
@@ -183,14 +185,17 @@ public class Main implements Runnable {
 			if (window.WindowShouldBeClosed())
 				isRunning = false;
 
+			System.out.println(camera.getPitch());
+			
 			float currentTime = window.getTime();
 			float elapsedTime = currentTime - startTime;
 			startTime = currentTime;
-			
+
 			camera.update(window);
 			terrainColumn = (int) (player.getPosition().x / Terrain.SIZE);
 			terrainRow = (int) (player.getPosition().z / Terrain.SIZE);
-			player.update(window, elapsedTime, terrains[terrainColumn][terrainRow]);
+			player.update(window, elapsedTime,
+					terrains[terrainColumn][terrainRow]);
 			iceConeEmitter.update(elapsedTime);
 
 			renderer.processEntity(player);
@@ -202,15 +207,14 @@ public class Main implements Runnable {
 					renderer.processTerrain(terrains[i][j]);
 				}
 			}
-			List<Particle> particles = sortParticles(iceConeEmitter.getParticles(), camera);
-			for (Particle particle : particles) {
+			for (Particle particle : iceConeEmitter.getParticles()) {
 				renderer.processParticle(particle);
 			}
 
 			renderer.render(lights, camera);
 
 			guiRenderer.render(guis);
-			
+
 			window.update();
 			window.swapBuffers();
 		}
@@ -219,21 +223,6 @@ public class Main implements Runnable {
 		renderer.cleanUp();
 		loader.cleanUp();
 		window.cleanUp();
-	}
-
-	private List<Particle> sortParticles(List<Particle> particles, Camera camera){
-		Collections.sort(particles, new Comparator<Particle>() {
-			@Override
-			public int compare(Particle particle1, Particle particle2) {
-				return (int) ((lengthBetween2Vec3(camera.getPosition(), particle1.getPosition()) - lengthBetween2Vec3(camera.getPosition(), particle2.getPosition()))*1000);
-			}
-		});;
-		
-		return particles;
-	}
-	
-	private float lengthBetween2Vec3(Vector3f point1, Vector3f point2){
-		return (float) Math.sqrt((point1.x + point2.x)*(point1.x + point2.x)+(point1.y + point2.y)*(point1.y + point2.y)+(point1.z + point2.z)*(point1.z + point2.z));
 	}
 
 	public static void main(String[] args) {

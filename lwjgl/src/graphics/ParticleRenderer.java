@@ -1,5 +1,6 @@
 package graphics;
 
+import entities.Camera;
 import entities.Particle;
 
 import java.util.List;
@@ -28,12 +29,12 @@ private ParticleShader shader;
 		shader.stop();
 	}
 	
-	public void render(Map<TexturedModel, List<Particle>> particles){
+	public void render(Map<TexturedModel, List<Particle>> particles, Camera camera){
 		for(TexturedModel model : particles.keySet()){
 			prepareTexturedModel(model);
 			List<Particle> batch = particles.get(model);
 			for(Particle particle : batch){
-				prepareInstance(particle);
+				prepareInstance(particle, camera);
 				GL11.glDrawElements(GL11.GL_TRIANGLES, model.getRawModel().getVertexCount(),
 						GL11.GL_UNSIGNED_INT, 0);
 			}
@@ -67,10 +68,10 @@ private ParticleShader shader;
 		GL30.glBindVertexArray(0);
 	}
 	
-	private void prepareInstance(Particle particle){
-		Matrix4f transformationMatrix = Maths.createTransformationMatrix(
-				particle.getPosition(), particle.getRotX(), particle.getRotY(),
-				particle.getRotZ(), particle.getScale());
+	private void prepareInstance(Particle particle, Camera camera){
+		Matrix4f transformationMatrix = Maths.createTransformationMatrixWithQuaternion(
+				particle.getPosition(), particle.getRotX()+camera.getPitch(), particle.getRotY()+camera.getYaw(),
+				particle.getRotZ()+camera.getRoll(), particle.getScale());
 		shader.loadTransformationMatrix(transformationMatrix);
 		shader.loadOffset(particle.getTextureXOffset(), particle.getTextureYOffset(), particle.getTextureXOffset2(), particle.getTextureYOffset2());
 		shader.loadBlendFactor(particle.getBlendFactor());

@@ -82,7 +82,7 @@ public class ParticleEmitter {
 				* velocityModifier + randomZ / 10 + dz);
 		Particle particle = new Particle(model, new Vector3f(position.x,
 				position.y, position.z), 0, 0,
-				randomGenerator.nextFloat() * 360, 1, particleVelocity,
+				0, 1, particleVelocity,
 				particleLifeTime + randomLifeTime);
 		particle.getModel().getTexture().setAmbient(1);
 		return particle;

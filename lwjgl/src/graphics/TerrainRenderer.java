@@ -76,7 +76,7 @@ public class TerrainRenderer {
 	}
 
 	private void loadModelMatrix(Terrain terrain) {
-		Matrix4f transformationMatrix = Maths.createTransformationMatrix(
+		Matrix4f transformationMatrix = Maths.createTransformationMatrixWithQuaternion(
 				new Vector3f(terrain.getX(), 0, terrain.getZ()), 0, 0, 0, 1);
 		shader.loadTransformationMatrix(transformationMatrix);
 	}
