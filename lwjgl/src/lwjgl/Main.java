@@ -20,10 +20,12 @@ import terrains.Terrain;
 import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
+import graphics.GuiRenderer;
 import graphics.Loader;
 import graphics.MasterRenderer;
 import graphics.OBJFileLoader;
 import graphics.Window;
+import gui.GuiTexture;
 
 public class Main implements Runnable {
 
@@ -167,6 +169,13 @@ public class Main implements Runnable {
 		//create camera to player
 		Camera camera = new Camera(player);
 		
+		//create GUIs
+		List<GuiTexture> guis = new ArrayList<>();
+		GuiTexture gui = new GuiTexture(loader.loadTexture("res/terrain/blendmap.png"), new Vector2f(0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
+		guis.add(gui);
+		
+		GuiRenderer guiRenderer = new GuiRenderer(loader);
+		
 		float startTime = window.getTime();
 
 		// main loop
@@ -200,10 +209,13 @@ public class Main implements Runnable {
 
 			renderer.render(lights, camera);
 
+			guiRenderer.render(guis);
+			
 			window.update();
 			window.swapBuffers();
 		}
 
+		guiRenderer.cleanUp();
 		renderer.cleanUp();
 		loader.cleanUp();
 		window.cleanUp();
