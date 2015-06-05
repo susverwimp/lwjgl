@@ -30,6 +30,9 @@ private ParticleShader shader;
 	}
 	
 	public void render(Map<TexturedModel, List<Particle>> particles, Camera camera){
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 		for(TexturedModel model : particles.keySet()){
 			prepareTexturedModel(model);
 			List<Particle> batch = particles.get(model);
@@ -40,6 +43,8 @@ private ParticleShader shader;
 			}
 			unbindTexturedModel();
 		}
+		GL11.glDisable(GL11.GL_BLEND);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 	}
 	
 	private void prepareTexturedModel(TexturedModel model){

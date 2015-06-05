@@ -48,7 +48,6 @@ public class MasterRenderer {
 	
 	public MasterRenderer(Loader loader) {
 		enableCulling();
-		enableBlending();
 		createProjectionMatrix();
 		renderer = new EntityRenderer(shader, projectionMatrix);
 		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
@@ -64,11 +63,6 @@ public class MasterRenderer {
 
 	public static void disableCulling() {
 		GL11.glDisable(GL11.GL_CULL_FACE);
-	}
-
-	public static void enableBlending() {
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 	}
 
 	public void render(List<Light> lights, Camera camera) {
@@ -87,12 +81,12 @@ public class MasterRenderer {
 		terrainRenderer.render(terrains);
 		terrainShader.stop();
 
+		skyboxRenderer.render(camera, RED, GREEN, BLUE);
+
 		particleShader.start();
 		particleShader.loadViewMatrix(camera);
 		particleRenderer.render(particles, camera);
 		particleShader.stop();
-
-		skyboxRenderer.render(camera, RED, GREEN, BLUE);
 		
 		particles.clear();
 		terrains.clear();

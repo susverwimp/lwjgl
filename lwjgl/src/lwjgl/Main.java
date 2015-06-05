@@ -7,6 +7,7 @@ import java.util.Random;
 import math.Vector2f;
 import math.Vector3f;
 import models.ModelData;
+import models.RawModel;
 import models.TexturedModel;
 import entities.Camera;
 import entities.Entity;
@@ -154,14 +155,30 @@ public class Main implements Runnable {
 				0), new Vector3f(1, 0.01f, 0.002f));
 		lights.add(light2);
 
-		// create emitter
-		ParticleEmitter iceConeEmitter = new ParticleEmitter(loader,
-				new Vector3f(1200, 6, 2010), 9, 2, new Vector3f(-0.1f, 0, 0),
-				new Vector3f(-0.1f, 0, 0), 1, new Vector2f(), new Vector2f(
-						-0.5f, 0.5f), new Vector2f(-0.5f, 0.5f), new Vector2f(
-						-0.2f, 0.2f));
+		// create emitters
+		List<ParticleEmitter> emitters = new ArrayList<>();
+		// create particle rawModel
+		RawModel particleModel = loader.loadToVao(new float[] { -0.1f, 0.1f,
+				0f, -0.1f, -0.1f, 0f, 0.1f, -0.1f, 0f, 0.1f, 0.1f, 0f },
+				new float[] { 0f, 0f, 0f, 1f, 1f, 1f, 1f, 0f }, new float[] {
+						0f, 0f, 1f, 0f, 0f, 1f, 0f, 0f, 1f, 0f, 0f, 1f },
+				new int[] { 0, 1, 3, 3, 1, 2 });
+		TexturedModel snowParticle = new TexturedModel(particleModel, new ModelTexture(loader.loadTexture("res/particles/snow-particle.png"), 2));
+		ParticleEmitter iceConeEmitter = new ParticleEmitter(snowParticle, new Vector3f(1200, 6, 2010),
+				9, 2, new Vector3f(0, 0.1f, 0), new Vector3f(0, 0.1f, 0), 1,
+				new Vector2f(-0.5f, 0.5f), new Vector2f(), new Vector2f(-0.5f,
+						0.5f), new Vector2f(-0.2f, 0.2f), 3);
+		emitters.add(iceConeEmitter);
 		iceConeEmitter.start();
 
+		TexturedModel fireParticle = new TexturedModel(particleModel, new ModelTexture(loader.loadTexture("res/particles/fire-particle.png"), 4));
+		ParticleEmitter fireEmitter = new ParticleEmitter(fireParticle, new Vector3f(1220, 6, 2010),
+				9, 4, new Vector3f(0, 0.01f, 0), new Vector3f(0, 0.01f, 0), 1,
+				new Vector2f(-0.5f, 0.5f), new Vector2f(), new Vector2f(-0.5f,
+						0.5f), new Vector2f(-0.2f, 0.2f), 7);
+		emitters.add(fireEmitter);
+		fireEmitter.start();
+		
 		// create player
 		Player player = new Player(lampTexturedModel, 0, new Vector3f(1200, 3,
 				2000), 0, 0, 0, 1);
@@ -173,7 +190,7 @@ public class Main implements Runnable {
 		List<GuiTexture> guis = new ArrayList<>();
 		GuiTexture gui = new GuiTexture(
 				loader.loadTexture("res/terrain/blendmap.png"), new Vector2f(
-						0.5f, 0.5f), new Vector2f(0.25f, 0.25f));
+						0.6f, -0.6f), new Vector2f(0.25f, 0.25f));
 		guis.add(gui);
 
 		GuiRenderer guiRenderer = new GuiRenderer(loader);
@@ -185,8 +202,6 @@ public class Main implements Runnable {
 			if (window.WindowShouldBeClosed())
 				isRunning = false;
 
-			System.out.println(camera.getPitch());
-			
 			float currentTime = window.getTime();
 			float elapsedTime = currentTime - startTime;
 			startTime = currentTime;
@@ -196,7 +211,9 @@ public class Main implements Runnable {
 			terrainRow = (int) (player.getPosition().z / Terrain.SIZE);
 			player.update(window, elapsedTime,
 					terrains[terrainColumn][terrainRow]);
-			iceConeEmitter.update(elapsedTime);
+			for(ParticleEmitter emitter : emitters){
+				emitter.update(elapsedTime);
+			}
 
 			renderer.processEntity(player);
 			for (Entity entity : entities) {
@@ -207,10 +224,12 @@ public class Main implements Runnable {
 					renderer.processTerrain(terrains[i][j]);
 				}
 			}
-			for (Particle particle : iceConeEmitter.getParticles()) {
-				renderer.processParticle(particle);
+			for(ParticleEmitter emitter : emitters){
+				for (Particle particle : emitter.getParticles()) {
+					renderer.processParticle(particle);
+				}
 			}
-
+			
 			renderer.render(lights, camera);
 
 			guiRenderer.render(guis);
